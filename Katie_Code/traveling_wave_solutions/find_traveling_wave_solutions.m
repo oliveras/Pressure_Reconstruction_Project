@@ -18,7 +18,7 @@ g = 1;                          % gravity
 % - - - - - - - - - - - - - - - - - - - 
 % Fourier Parameters
 % - - - - - - - - - - - - - - - - - - - 
-Nn = 10;                        % number of Fourier Modes
+Nn = 32;                        % number of Fourier Modes
 N = (-Nn:Nn)';                  % a vector of modes
 
 
@@ -35,7 +35,7 @@ iniGuessX = [iniGuessEtaHat;iniGuessC];
 % - - - - - - - - - - - - - - - - - - - 
 % Use the internal Matlab "Newton's Method
 % - - - - - - - - - - - - - - - - - - - 
-options = optimset('TolFun',1e-12,'TolX',1e-12,'jacobian','on','display','iter');
+options = optimset('TolFun',1e-8,'TolX',1e-8,'jacobian','on','display','iter');
 X = fsolve(@(X) solveFunct(X,x,N), iniGuessX,options);
 
 
@@ -102,6 +102,8 @@ c = X(end);
 g = 1;
 h = 0.5;
 
+
+
 eta = invHat(etaHat,x,N);
 etaX = d(eta,x,N);
 
@@ -137,7 +139,6 @@ h = 0.5;
 eta = invHat(etaHat,x,N);
 etaX = d(eta,x,N);
 sqrtTerm = sqrt((c^2 - 2*g*eta).*(1 + etaX.^2));
-
 
 
 for n = -Nn:Nn
