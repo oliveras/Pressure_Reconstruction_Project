@@ -73,7 +73,7 @@ fk(Nn+1) = c - hat(sqrtTerm,x,0);  % modified the zeroth coefficient
 subplot(2,1,1)
 stem(N, real(fk))
 xlabel('$N$',axes_options{:})
-title('Fourier Coefficients of $\hat\phi_x(x,-h)$',axes_options{:})
+title('Fourier Coefficients of $\hat\phi_x(x,-h)$'
 
 subplot(2,1,2)
 fkInv = invHat(fk, x, N);
@@ -86,19 +86,15 @@ leg = legend('$p-gh$','$\rho g \eta$','$\eta$','location','SouthEast');
 set(leg,axes_options{:});
 axis tight
 xlabel('$x$',axes_options{:})
-
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% - - - - - - - - - - - - - - - - - - - 
-% Calculate the Fourier Coefficients of phi_x(x,-h)
-% - - - - - - - - - - - - - - - - - - - 
+%
+%
+%
 function fk = FC(etax, eta, qx, c, h, x, Nn)
 fk = zeros(2*Nn+1, 1);
     for k = -Nn:Nn
