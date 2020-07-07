@@ -110,10 +110,11 @@ etaX = d(eta,x,N);
 F = zeros(2*Nn+1,1);
 F(Nn+1) = etaHat(Nn+1);
 
-for j=1:2*Nn+1
+for j=-Nn:Nn
+    jIndx = j+Nn+1;
     int = @(x)cos(j*x)*(c-sqrt(c^2-2.*(P-rho*g*h)));
     coeff = integral(int,0,2*pi,'ArrayValued',true);
-    sigma(j,:) =(1/pi).*coeff.*cos(j*x).*cosh(j*(eta+h));
+    sigma(jIndx,:) =(1/pi).*coeff.*cos(j*x).*cosh(j*(eta+h));
 end
 
 q = sum(sigma) - c + sqrt((c^2-2*rho*g*eta)./(1+(etaX).^2));
@@ -146,18 +147,20 @@ function dF = jacobian(X,x,N)
     eta = invHat(etaHat,x,N);
     etaX = d(eta,x,N);
 
-    for k = 1:1+2*Nn
-        for j=1:2*Nn+1
-            int = @(x)cos(j*x)*(c-sqrt(c^2-2.*(P-rho*g*h)));
+    for k = -Nn:Nn
+        kIndx = k+Nn+1;
+        for j=-Nn:Nn
+            jIndx = j+Nn+1;
+            int = @(x)exp(-1i*j*x)*(c-sqrt(c^2-2.*(P-rho*g*h)));
             coeff = integral(int,0,2*pi,'ArrayValued',true);
-            sigma(j,:) =(1/pi).*coeff.*cos(j*x).*sinh(j*(eta+h)).*(j*exp(1i*k*x));
+            sigma(jIndx,:) =(1/pi).*coeff.*cos(j*x).*sinh(j*(eta+h)).*(j*exp(1i*k*x));
         end
 
         dFdEta = sum(sigma) + (1/2)*((c^2-2*rho*g*eta)./(1+(etaX).^2)).^(-1/2)...
         *(((-2*rho*g*exp(1i*k*x)).*(1+(etaX).^2)-(c^2-2*rho*g*eta).*(2*etaX)...
         .*(i*k*exp(i*k*x)))/(1+(etaX).^2).^2);
     
-        dF(k,:) = hat(dFdEta,x,N);
+        dF(kIndx,:) = hat(dFdEta,x,N);
     end
 end
 
