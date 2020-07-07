@@ -8,7 +8,7 @@ format long
 % - - - - - - - - - - - - - - - - - - - 
 % Model Parameters
 % - - - - - - - - - - - - - - - - - - - 
-Nx = 100;                       % number of x points
+Nx = 200;                       % number of x points
 x = linspace(0,2*pi,Nx);        % x grid points
 dx = x(2) - x(1);               % determine grid spacing
 L = x(end) - x(1);              % determine the period
@@ -39,7 +39,7 @@ iniGuessX = [iniGuessEtaHat;iniGuessC];
 % - - - - - - - - - - - - - - - - - - - 
 % Use the internal Matlab "Newton's Method
 % - - - - - - - - - - - - - - - - - - - 
-options = optimset('TolFun',1e-8,'TolX',1e-8,'jacobian','on','display','iter');
+options = optimset('TolFun',1e-12,'TolX',1e-12,'jacobian','off','display','iter');
 X = fsolve(@(X) solveFunct(X,x,N), iniGuessX,options);
 
 
@@ -50,7 +50,6 @@ etaHat = X(1:end-1);
 eta = invHat(etaHat,x,N);
 etax = d(eta,x,N);
 c = X(end);
-
 
 % - - - - - - - - - - - - - - - - - - - 
 % Broke the qx term into two parts
@@ -63,7 +62,7 @@ qx = c + sqrtTerm;
 % Calculate the fk
 % - - - - - - - - - - - - - - - - - - - 
 fk = FC(etax, eta, qx, c, h, x, Nn);
-fk(Nn+1) = c - hat(sqrtTerm,x,0);  % modified the zeroth coefficient
+fk(Nn+1) = hat(qx,x,0);  % modified the zeroth coefficient
 
 
 
@@ -77,10 +76,10 @@ title('Fourier Coefficients of $\hat\phi_x(x,-h)$',axes_options{:})
 
 subplot(2,1,2)
 fkInv = invHat(fk, x, N);
-P = -rho*((fkInv -c).^2 - c.^2)/2;
+P = (c*fkInv -1/2*fkInv.^2)*rho;
 plot(x, P,'-')
 hold on
-plot(x,rho*g*eta)
+plot(x,rho*g*eta,'.-')
 plot(x,eta)
 leg = legend('$p-gh$','$\rho g \eta$','$\eta$','location','SouthEast');
 set(leg,axes_options{:});
@@ -102,8 +101,8 @@ xlabel('$x$',axes_options{:})
 function fk = FC(etax, eta, qx, c, h, x, Nn)
 fk = zeros(2*Nn+1, 1);
     for k = -Nn:Nn
-        int = c.*etax.*sinh(k*(eta + h)) - 1i*qx.*cosh(k*(eta + h));
-        fk(Nn+k+1) = -1i*hat(int, x, k);  % added a factor of 1i?  Is this correct?
+        int = -1i*c.*etax.*sinh(k*(eta + h)) - qx.*cosh(k*(eta + h));
+        fk(Nn+k+1) = -hat(int, x, k);  
     end
 end
 
@@ -114,7 +113,7 @@ function uHat = hat(u,x,N)
 dx = x(2)-x(1);
 L = x(end)-x(1);
 intTerm = exp(-1i*N*x).*u;      % create a matrix mesh of the Fourier integrand
-uHat = sum(intTerm(:,2:end),2)*dx/L';   % This is the trapz. rule for periodic functions
+uHat = sum(intTerm(:,2:end),2)*dx';   % This is the trapz. rule for periodic functions
 end
 
 % - - - - - - - - - - - - - - - - - - - 
@@ -123,11 +122,7 @@ end
 function u = invHat(uHat,x,N)
 sumTerm = exp(1i*N*x).*uHat;
 u = sum(sumTerm,1);
-if norm(imag(u))<1e-10
-    u = real(u);
-else
-    disp('Complex function')
-end
+
 end
 
 
