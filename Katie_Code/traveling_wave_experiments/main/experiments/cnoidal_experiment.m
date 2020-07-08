@@ -5,9 +5,15 @@ clc
 figure
 format compact
 addpath ../../coreFiles -end
-%e1-e5   h=5.05 cm.
-%e6-e7   h=3.55 cm.
-%e8-e10 	h=4.10 cm.
+
+
+str_options = {'interpreter','latex','fontsize',14};
+title_options = {'interpreter','latex','fontsize',18};
+
+
+%e01-e05     h=5.05 cm.
+%e06-e07     h=3.55 cm.
+%e08-e10     h=4.10 cm.
 
 % - - - - - - - - - - - - - - - - - - - - - - - - -
 data = importdata('../../data/cnshifted-tacp-21aug13-p59-3.txt');
@@ -66,7 +72,7 @@ for scales = 1;
         
         
         %%%% Change this to the measured speed.
-
+        
         c0 = sqrt(g*h); dt = .005;
         %c0 = sqrt(g*h)+55.523961849884493;
         etaT = interpft(etaFilter,length(etaWindow));
@@ -84,35 +90,21 @@ for scales = 1;
         
         % - - - - - - - - - - - - - - - - - - - - - - - - - -
         
-        [x etaNoise etaFilter etaHydro etaLinear etaVishal etaKatie etaKatieH etaFull] = getApproxsFromData(pFilter, c, h, g, L,etaWindow,etaFilter);
-        [hydroMaxError linearMaxError vishalMaxError katieMaxError katieHMaxError fullMaxError strOut] = getErrorsFromApproxData(1,h,etaFilter,etaHydro, etaLinear, etaVishal,etaKatie,etaKatieH,etaFull);
-        disp(strOut)
+        [x etaNoise etaFilter etaHydro etaKatieH etaFull] = getApproxsFromData(pFilter, c, h, g, L,etaWindow,etaFilter);
+        colors = parula(10);
         
-        pFilter = etaHydro;
-        etaTrue = interpft(etaWindow,length(x));
-        colors = hsv(8);
-        
-        plot(x,etaTrue,'k','LineWidth',1); hold on
-        
+        plot(x,etaFilter,'k','LineWidth',2); hold on
         plot(x,etaHydro)%,'Color',colors(1,:),'MarkerFaceColor',colors(1,:))
-        plot(x,etaLinear)%'LineWidth',2,'Color',colors(2,:),'MarkerFaceColor',colors(2,:))
-        %plot(x,etaVishal,'Color',colors(3,:),'MarkerFaceColor',colors(3,:))
-        %plot(x,etaKatie,'Color',colors(4,:),'MarkerFaceColor',colors(4,:))
-        plot(x,etaKatieH)%,'-*','MarkerSize',1,'LineWidth',2)%,'Color',colors(5,:),'MarkerFaceColor',colors(5,:))
-        plot(x,etaFull)%,'Color',colors(6,:),'MarkerFaceColor',colors(6,:))
+        plot(x,etaKatieH)%,'Color',colors(4,:),'MarkerFaceColor',colors(4,:))
+        plot(x,etaFull)%,'Color',colors(85,:),'MarkerFaceColor',colors(8,:))
         xlabel('\xi - cm')
         ylabel('Surface Elevation \eta - cm')
         axis tight
         
-        etaFFT = fftshift(fft(etaFilter))/length(etaFilter);
-        etaFilter = invHat(etaFFT);
+        leg = legend('Measured Surface','$p = \rho g h$','Katie - Heuristic','Nonlinear Map','location','best');
+        set(leg,str_options{:});
         
-        pFFT = fftshift(fft(pFilter))/length(pFilter);
-        pFilter = invHat(pFFT);
         
-        %x = linspace(0,x(end),length(pFilter));
-        %legend('True','Hydro','Linear','Vishal','Katie','KatieH','Full')
-        %legend('True','Heuristic','Nonlocal')
         
     end
 end
