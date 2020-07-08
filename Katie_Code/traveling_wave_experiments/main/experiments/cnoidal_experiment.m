@@ -109,7 +109,3 @@ for scales = 1;
     end
 end
 
-%legend('True .5','Heuristic','Nonlocal','True 1','Heuristic','Nonlocal','True 2','Heuristic','Nonlocal')
-
-%save(fileName)
-
