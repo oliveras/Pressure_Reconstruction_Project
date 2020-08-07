@@ -47,7 +47,8 @@ else
     Nv = -N:N;
 end
 Nv = -7500:7499;
-pHat = fft(p);
+filter = abs(Nv<20);
+pHat = fftshift(fft(p)).*filter;
 stem(Nv,real(pHat)/M)
 hold on
 stem(Nv,imag(pHat)/M)
@@ -59,7 +60,7 @@ ylabel('Value',str_options{:})
 title('FFT of the Raw Pressure Data',title_options{:})
 set(gcf,'position',[446         283        1779         949])
 
-
+return
 
 % - - - - - - - - - - - - - - - - - - - - - - - - - 
 % Initial Set-Up
